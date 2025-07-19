@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
@@ -110,7 +112,7 @@ const Drivers: React.FC = () => {
               label="Drive Date"
               value={drive.date}
               onChange={(newValue: Dayjs | null) => handleDriveChange(index, 'date', newValue)}
-              renderInput={(params: any) => <TextField {...params} />}
+              slotProps={{ textField: { variant: 'outlined' } }}
               disablePast
               maxDate={dayjs().add(7, 'day')}
             />
@@ -118,14 +120,14 @@ const Drivers: React.FC = () => {
               label="Start Time"
               value={drive.start}
               onChange={(newValue: Dayjs | null) => handleDriveChange(index, 'start', newValue)}
-              renderInput={(params: any) => <TextField {...params} />}
+              slotProps={{ textField: { variant: 'outlined' } }}
             />
             <TimePicker
               label="End Time"
               value={drive.end}
               onChange={(newValue: Dayjs | null) => handleDriveChange(index, 'end', newValue)}
-              renderInput={(params: any) => <TextField {...params} />}
-              minTime={drive.start}
+              slotProps={{ textField: { variant: 'outlined' } }}
+              minTime={drive.start || undefined}
             />
             <button onClick={() => handleDeleteDrive(index)} style={{ marginLeft: '10px' }}>Delete</button>
           </div>
