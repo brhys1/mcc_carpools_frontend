@@ -40,9 +40,6 @@ import {
   ApiResponse 
 } from '../../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-
 
 const Riders: React.FC = () => {
   const router = useRouter();
@@ -69,12 +66,7 @@ const Riders: React.FC = () => {
   });
 
   useEffect(() => {
-    console.log('API_BASE_URL:', API_BASE_URL);
-    axios.get<SheetsResponse>(`${API_BASE_URL}/api/sheets`, {
-      headers: {
-        'x-api-key': API_KEY,
-      },
-    })
+    axios.get('/api/sheets')
       .then((response) => {        
         const dataArray = response.data.data;
         console.log('Raw data from API:', dataArray);
@@ -90,7 +82,6 @@ const Riders: React.FC = () => {
       .catch((error: any) => {
         console.error('Error fetching data:', error);
         console.error('Error response:', error.response?.data);
-        console.error('API URL attempted:', `${API_BASE_URL}/api/sheets`);
       });
   }, []);
   
@@ -124,11 +115,7 @@ const Riders: React.FC = () => {
 
     console.log('Submitting Rider Data:', JSON.stringify(riderData, null, 2));
 
-    axios.post<ApiResponse>(`${API_BASE_URL}/api/riders`, riderData, {
-      headers: {
-        'x-api-key': API_KEY,
-      },
-    })
+    axios.post('/api/riders', riderData)
       .then((response) => {
         console.log(response.data);
         alert('Rider saved successfully!');
