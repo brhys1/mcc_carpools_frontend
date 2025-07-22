@@ -40,6 +40,8 @@ const defaultDivisions = {
   pierpont: false,
 };
 
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
 const Home: React.FC = () => {
   const router = useRouter();
   const [weekDrives, setWeekDrives] = useState<any>(null);
@@ -58,7 +60,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchWeekDrives = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/current-week-drives`);
+        const response = await axios.get(`${API_BASE_URL}/api/current-week-drives`, {
+          headers: {
+            'x-api-key': API_KEY,
+          },
+        });
         setWeekDrives(response.data);
       } catch (error) {
         console.error('Error fetching week drives:', error);
@@ -73,7 +79,11 @@ const Home: React.FC = () => {
   // Fetch Sheets names when modal opens
   useEffect(() => {
     if (signupOpen) {
-      axios.get(`${API_BASE_URL}/api/sheets`).then(res => {
+      axios.get(`${API_BASE_URL}/api/sheets`, {
+        headers: {
+          'x-api-key': API_KEY,
+        },
+      }).then(res => {
         // Transform the data to { name, email }
         const names = res.data.data.map((item: any) => ({
           name: `${item["First Name"]} ${item["Last Name"]}`,
@@ -97,12 +107,19 @@ const Home: React.FC = () => {
     if (!phone) return;
     try {
       await axios.delete(`${API_BASE_URL}/api/drives/by-phone`, {
-        data: { phone: phone, drive_id: driveId }
+        data: { phone: phone, drive_id: driveId },
+        headers: {
+          'x-api-key': API_KEY,
+        },
       });
       alert('Drive deleted successfully!');
       // Refresh the drives list
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/current-week-drives`);
+      const response = await axios.get(`${API_BASE_URL}/api/current-week-drives`, {
+        headers: {
+          'x-api-key': API_KEY,
+        },
+      });
       setWeekDrives(response.data);
     } catch (error: any) {
       alert(error?.response?.data?.error || 'Failed to delete drive.');
@@ -168,6 +185,10 @@ const Home: React.FC = () => {
       await axios.post(`${API_BASE_URL}/api/drives/${signupDrive.id}/signup`, {
         name: signupName,
         email: signupEmail,
+      }, {
+        headers: {
+          'x-api-key': API_KEY,
+        },
       });
       alert('Signed up for drive!');
       setSignupOpen(false);
@@ -175,7 +196,11 @@ const Home: React.FC = () => {
       setSignupName('');
       setSignupEmail('');
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/current-week-drives`);
+      const response = await axios.get(`${API_BASE_URL}/api/current-week-drives`, {
+        headers: {
+          'x-api-key': API_KEY,
+        },
+      });
       setWeekDrives(response.data);
     } catch (error: any) {
       alert(error?.response?.data?.error || 'Failed to sign up.');

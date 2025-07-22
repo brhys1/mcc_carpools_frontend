@@ -24,6 +24,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { DriveDetail, DriverData, ApiResponse } from '../../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 const Drivers: React.FC = () => {
   const router = useRouter();
@@ -74,7 +75,11 @@ const Drivers: React.FC = () => {
 
     console.log(driverData);
 
-    axios.post<ApiResponse>(`${API_BASE_URL}/api/drivers`, driverData)
+    axios.post<ApiResponse>(`${API_BASE_URL}/api/drivers`, driverData, {
+      headers: {
+        'x-api-key': API_KEY,
+      },
+    })
       .then((response) => {
         console.log(response.data);
         alert('Driver saved successfully!');
