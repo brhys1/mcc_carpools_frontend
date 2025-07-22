@@ -51,6 +51,7 @@ export interface DriverData {
   name: string;
   email: string;
   address: string;
+  phone: string;
   drives: Array<{
     [key: string]: Array<{
       start: string | null;
@@ -61,13 +62,11 @@ export interface DriverData {
 }
 
 export interface SheetsResponse {
-  data: {
-    data: Array<{
-      "First Name": string;
-      "Last Name": string;
-      Uniqname?: string;
-    }>;
-  };
+  data: Array<{
+    "First Name": string;
+    "Last Name": string;
+    Uniqname?: string;
+  }>;
 }
 
 export interface ApiResponse {
