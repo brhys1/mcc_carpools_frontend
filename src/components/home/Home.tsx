@@ -332,7 +332,7 @@ const Home: React.FC = () => {
               }}
             >
               <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                🚗 Next 7 Days
+                🚗 Drives until {weekDrives.period_end}
               </Typography>
               <Typography variant="body1" sx={{ opacity: 0.9 }}>
                 {weekDrives.total_drives} total drives scheduled
@@ -343,14 +343,27 @@ const Home: React.FC = () => {
               {weekDrives.total_drives === 0 ? (
                 <Box sx={{ textAlign: 'center', py: 4 }}>
                   <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No drives scheduled for the next 7 days yet
+                    No drives scheduled until next Sunday yet
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Be the first to offer a ride!
                   </Typography>
                 </Box>
               ) : (
-                Object.entries(weekDrives.drives_by_day).map(([day, drives]: [string, any]) => (
+                Object.entries(weekDrives.drives_by_day)
+                  .sort((a, b) => {
+                    // Extract MM/DD/YY from 'Monday, 12/16/24'
+                    const getDate = (dayStr: string) => {
+                      const parts = dayStr.split(', ');
+                      return parts.length > 1 ? parts[1] : dayStr;
+                    };
+                    const parse = (d: string) => {
+                      const [month, day, year] = d.split('/').map(Number);
+                      return new Date(2000 + year, month - 1, day); // 2-digit year fix
+                    };
+                    return parse(getDate(a[0])).getTime() - parse(getDate(b[0])).getTime();
+                  })
+                  .map(([day, drives]: [string, any]) => (
                   <Accordion key={day} sx={{ mb: 2 }}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>

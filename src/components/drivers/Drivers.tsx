@@ -233,7 +233,7 @@ const Drivers: React.FC = () => {
                       </Box>
                       <Box sx={{ flex: 1 }}>
                         <TimePicker
-                          label="Start Time"
+                          label="Departure Time"
                           value={drive.start}
                           onChange={(newValue: Dayjs | null) => handleDriveChange(index, 'start', newValue)}
                           slotProps={{ textField: { variant: 'outlined', fullWidth: true } }}
