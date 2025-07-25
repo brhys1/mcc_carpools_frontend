@@ -56,10 +56,19 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchWeekDrives = async () => {
       try {
+        console.log('Fetching /api/current-week-drives...');
         const response = await axios.get('/api/current-week-drives');
+        console.log('Received response:', response);
         setWeekDrives(response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching week drives:', error);
+        if (error.response) {
+          console.error('Error response data:', error.response.data);
+          console.error('Error response status:', error.response.status);
+        }
+        if (error.message) {
+          console.error('Error message:', error.message);
+        }
       } finally {
         setLoading(false);
       }
