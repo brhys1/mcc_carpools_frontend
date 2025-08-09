@@ -46,16 +46,8 @@ const Riders: React.FC = () => {
   const [data, setData] = useState<NameData[]>([]);
   const [selectedName, setSelectedName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [availability, setAvailability] = useState<Availability>(() => {
-    const today = dayjs();
-    const startOfNextWeek = today.day() === 0 ? today.add(1, 'day') : today.add(8 - today.day(), 'day');
-    const daysOfWeek = Array.from({ length: 7 }, (_, i) => startOfNextWeek.add(i, 'day').format('dddd, MM/DD/YY'));
-    
-    return daysOfWeek.reduce((acc: Availability, day: string) => {
-      acc[day.toLowerCase()] = [];
-      return acc;
-    }, {});
-  });
+  const [weekState, setWeekState] = useState<any>(null);
+  const [availability, setAvailability] = useState<Availability>({});
   const [divisions, setDivisions] = useState<Divisions>({
     kerrytown: false,
     central: false,
@@ -84,6 +76,44 @@ const Riders: React.FC = () => {
         console.error('Error response:', error.response?.data);
       });
   }, []);
+
+  useEffect(() => {
+    // Fetch week state first
+    axios.get('/api/week-state')
+      .then((response) => {
+        setWeekState(response.data);
+        console.log('Week state:', response.data);
+        
+        // Initialize availability based on week state
+        if (response.data.submissions_open) {
+          const weekStart = new Date(response.data.week_start);
+          weekStart.setDate(weekStart.getDate() + 8);
+          const daysOfWeek = [];
+          
+          for (let i = 0; i < 7; i++) {
+            const date = new Date(weekStart);
+            date.setDate(weekStart.getDate() + i);
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+            const dateStr = date.toLocaleDateString('en-US', { 
+              month: '2-digit', 
+              day: '2-digit', 
+              year: '2-digit' 
+            });
+            daysOfWeek.push(`${dayName}, ${dateStr}`);
+          }
+          
+          const newAvailability: Availability = {};
+          daysOfWeek.forEach((day: string) => {
+            newAvailability[day.toLowerCase()] = [];
+          });
+          
+          setAvailability(newAvailability);
+        }
+      })
+      .catch((error: any) => {
+        console.error('Error fetching week state:', error);
+      });
+  }, []);
   
 
   const handleDivisionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +121,11 @@ const Riders: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    if (!weekState?.submissions_open) {
+      alert('Submissions are currently closed. Please wait for next week.');
+      return;
+    }
+
     if (!selectedName) {
       alert('Name is required.');
       return;
@@ -215,6 +250,29 @@ const Riders: React.FC = () => {
                   You'll receive an email when paired with a driver, including pickup location details.
                 </Typography>
               </Alert>
+              {weekState && (
+                <Alert 
+                  severity={weekState.submissions_open ? "info" : "warning"} 
+                  sx={{ mb: 3 }}
+                >
+                  <Typography variant="body1" gutterBottom>
+                    <strong>
+                      {weekState.submissions_open 
+                        ? `Submissions Open - Deadline: ${weekState.deadline}`
+                        : 'Submissions Closed - Matching Completed'
+                      }
+                    </strong>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {weekState.submissions_open 
+                      ? weekState.collecting_for === 'current_week'
+                        ? `Submit your availability for ${weekState.week_start} to ${weekState.week_end}. Submissions close Friday at midnight.`
+                        : `Submit your availability for ${weekState.week_start} to ${weekState.week_end} (next week). Previous week matching completed. Submissions close Friday at midnight.`
+                      : `Matching for ${weekState.last_week_start} to ${weekState.last_week_end} has been completed. Check back next week for new availability submissions.`
+                    }
+                  </Typography>
+                </Alert>
+              )}
               <Card sx={{ mb: 4, p: 3 }}>
                 <Typography variant="h5" gutterBottom sx={{ color: '#333', mb: 3 }}>
                   👤 Personal Information
