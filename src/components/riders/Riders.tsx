@@ -64,7 +64,7 @@ const Riders: React.FC = () => {
         console.log('Raw data from API:', dataArray);
         const names: NameData[] = dataArray.map((item: any) => {
           const name = `${item["First Name"]} ${item["Last Name"]}`;
-          const email = item.Uniqname ? `${item.Uniqname}@umich.edu` : '';
+          const email = item.Uniqname ? `${item.Uniqname}` : '';
           console.log('Processing item:', item, 'Name:', name, 'Email:', email);
           return { name, email };
         });
@@ -87,7 +87,9 @@ const Riders: React.FC = () => {
         // Initialize availability based on week state
         if (response.data.submissions_open) {
           const weekStart = new Date(response.data.week_start);
-          weekStart.setDate(weekStart.getDate() + 8);
+          const weekEnd = new Date(response.data.week_end);
+          setWeekState({...response.data, week_start: weekStart.setDate(weekStart.getDate() + 8), week_end: weekEnd.setDate(weekEnd.getDate() + 8)});
+          weekStart.setDate(weekStart.getDate());
           const daysOfWeek = [];
           
           for (let i = 0; i < 7; i++) {
@@ -237,7 +239,7 @@ const Riders: React.FC = () => {
             <Box sx={{ p: 4 }}>
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body1" gutterBottom>
-                  <strong>Welcome to MCC Carpools!</strong> You can submit your availability for next week anytime throughout the week. 
+                  <strong>Welcome to MCC Carpools!</strong> You can submit your availability until Friday at midnight.
                   You must be an MCC member to participate.
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>
@@ -266,8 +268,8 @@ const Riders: React.FC = () => {
                   <Typography variant="body2" sx={{ mt: 1 }}>
                     {weekState.submissions_open 
                       ? weekState.collecting_for === 'current_week'
-                        ? `Submit your availability for ${weekState.week_start} to ${weekState.week_end}. Submissions close Friday at midnight.`
-                        : `Submit your availability for ${weekState.week_start} to ${weekState.week_end} (next week). Previous week matching completed. Submissions close Friday at midnight.`
+                        ? `Submit your availability for ${new Date(weekState.week_start).getDate()} to ${new Date(weekState.week_end).getDate()}. Submissions close Friday at midnight.`
+                        : `Submit your availability for ${new Date(weekState.week_start).getDate()} to ${new Date(weekState.week_end).getDate()} (next week). Previous week matching completed. Submissions close Friday at midnight.`
                       : `Matching for ${weekState.last_week_start} to ${weekState.last_week_end} has been completed. Check back next week for new availability submissions.`
                     }
                   </Typography>
