@@ -228,7 +228,7 @@ const Drivers: React.FC = () => {
                           onChange={(newValue: Dayjs | null) => handleDriveChange(index, 'date', newValue)}
                           slotProps={{ textField: { variant: 'outlined', fullWidth: true } }}
                           disablePast
-                          maxDate={dayjs().add(7, 'day')}
+                          maxDate={dayjs().add(14, 'day')}
                         />
                       </Box>
                       <Box sx={{ flex: 1 }}>

@@ -52,6 +52,11 @@ const Home: React.FC = () => {
   const [sheetsNames, setSheetsNames] = useState<{ name: string; email: string }[]>([]);
   const [selectedName, setSelectedName] = useState<string>('');
   const [selectedEmail, setSelectedEmail] = useState<string>('');
+  const [removeRiderOpen, setRemoveRiderOpen] = useState(false);
+  const [removeRiderDrive, setRemoveRiderDrive] = useState<any>(null);
+  const [removeRiderEmail, setRemoveRiderEmail] = useState('');
+  const [removeRiderLoading, setRemoveRiderLoading] = useState(false);
+  const [removeRiderName, setRemoveRiderName] = useState('');
 
   useEffect(() => {
     const fetchWeekDrives = async () => {
@@ -188,6 +193,45 @@ const Home: React.FC = () => {
       alert(error?.response?.data?.error || 'Failed to sign up.');
     } finally {
       setSignupLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveRider = (driveId: string, riderEmail: string, riderName: string) => {
+    setRemoveRiderDrive({ id: driveId });
+    setRemoveRiderEmail(''); // Don't pre-fill email
+    setRemoveRiderName(riderName);
+    setRemoveRiderOpen(true);
+  };
+
+  const handleCloseRemoveRider = () => {
+    setRemoveRiderOpen(false);
+    setRemoveRiderDrive(null);
+    setRemoveRiderEmail('');
+    setRemoveRiderName('');
+  };
+
+  const handleRemoveRiderSubmit = async () => {
+    if (!removeRiderEmail) {
+      alert('Email is required.');
+      return;
+    }
+    setRemoveRiderLoading(true);
+    try {
+      await axios.post(`/api/drives/${removeRiderDrive.id}/remove-rider`, {
+        email: removeRiderEmail,
+      });
+      alert('Removed from drive successfully!');
+      setRemoveRiderOpen(false);
+      setRemoveRiderDrive(null);
+      setRemoveRiderEmail('');
+      setLoading(true);
+      const response = await axios.get('/api/current-week-drives');
+      setWeekDrives(response.data);
+    } catch (error: any) {
+      alert(error?.response?.data?.error || 'Failed to remove from drive.');
+    } finally {
+      setRemoveRiderLoading(false);
       setLoading(false);
     }
   };
@@ -341,7 +385,7 @@ const Home: React.FC = () => {
               }}
             >
               <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                🚗 Drives until {weekDrives.period_end}
+                🚗 Carpools to Planet Rock until {weekDrives.period_end}
               </Typography>
               <Typography variant="body1" sx={{ opacity: 0.9 }}>
                 {weekDrives.total_drives} total drives scheduled
@@ -439,15 +483,25 @@ const Home: React.FC = () => {
                                   <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
                                     Riders:
                                   </Typography>
-                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                                     {drive.paired_riders.map((rider: any, riderIndex: number) => (
-                                      <Chip
-                                        key={riderIndex}
-                                        label={rider.name}
-                                        size="small"
-                                        variant="outlined"
-                                        sx={{ fontSize: '0.75rem' }}
-                                      />
+                                      <Box key={riderIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Chip
+                                          label={rider.name}
+                                          size="small"
+                                          variant="outlined"
+                                          sx={{ fontSize: '0.75rem' }}
+                                        />
+                                        <Button
+                                          variant="outlined"
+                                          color="error"
+                                          size="small"
+                                          onClick={() => handleRemoveRider(drive.id, rider.email, rider.name)}
+                                          sx={{ ml: 1, fontSize: '0.7rem' }}
+                                        >
+                                          Remove Me
+                                        </Button>
+                                      </Box>
                                     ))}
                                   </Box>
                                 </Box>
@@ -508,6 +562,35 @@ const Home: React.FC = () => {
             {signupLoading ? 'Signing Up...' : 'Sign Up'}
           </Button>
           <Button onClick={handleCloseSignup} fullWidth sx={{ mt: 1 }}>Cancel</Button>
+        </Box>
+      </Modal>
+
+      {/* Remove Rider Modal */}
+      <Modal open={removeRiderOpen} onClose={handleCloseRemoveRider}>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2, minWidth: 320 }}>
+          <Typography variant="h6" gutterBottom>Remove {removeRiderName} from This Drive</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Please confirm your email to remove yourself from this drive.
+          </Typography>
+          <TextField
+            label="Email"
+            value={removeRiderEmail}
+            onChange={(e) => setRemoveRiderEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleRemoveRiderSubmit}
+            fullWidth
+            sx={{ mt: 2 }}
+            disabled={removeRiderLoading || !removeRiderEmail}
+          >
+            {removeRiderLoading ? 'Removing...' : 'Remove Me'}
+          </Button>
+          <Button onClick={handleCloseRemoveRider} fullWidth sx={{ mt: 1 }}>Cancel</Button>
         </Box>
       </Modal>
     </Box>
