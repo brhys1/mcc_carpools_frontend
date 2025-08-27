@@ -64,7 +64,7 @@ const Riders: React.FC = () => {
         console.log('Raw data from API:', dataArray);
         const names: NameData[] = dataArray.map((item: any) => {
           const name = `${item["First Name"]} ${item["Last Name"]}`;
-          const email = item.Uniqname ? `${item.Uniqname}` : '';
+          const email = item.Uniqname ? `${item.Uniqname}@umich.edu` : '';
           console.log('Processing item:', item, 'Name:', name, 'Email:', email);
           return { name, email };
         });
