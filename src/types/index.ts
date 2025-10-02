@@ -4,6 +4,7 @@ import { Dayjs } from 'dayjs';
 export interface NameData {
   name: string;
   email: string;
+  phone?: string;
 }
 
 export interface TimeSlot {
@@ -43,6 +44,7 @@ export interface FormattedAvailability {
 export interface RiderData {
   name: string;
   email: string;
+  phone?: string;
   availability: FormattedAvailability;
   divisions: Divisions;
 }
@@ -52,6 +54,7 @@ export interface DriverData {
   email: string;
   address: string;
   phone: string;
+  notes?: string;
   drives: Array<{
     [key: string]: Array<{
       start: string | null;
@@ -66,6 +69,7 @@ export interface SheetsResponse {
     "First Name": string;
     "Last Name": string;
     Uniqname?: string;
+    "Phone Number"?: string;
   }>;
 }
 

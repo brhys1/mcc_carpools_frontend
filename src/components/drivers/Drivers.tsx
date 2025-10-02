@@ -30,6 +30,7 @@ const Drivers: React.FC = () => {
   const [address, setAddress] = useState<string>('');
   const [capacity, setCapacity] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
   const [driveDetails, setDriveDetails] = useState<DriveDetail[]>([]);
   
 
@@ -58,6 +59,7 @@ const Drivers: React.FC = () => {
       email,
       address, 
       phone,
+      notes,
       drives: driveDetails.map((drive: DriveDetail) => {
         const formattedDate = drive.date ? drive.date.format('dddd, MM/DD/YY') : null;
         return {
@@ -182,6 +184,18 @@ const Drivers: React.FC = () => {
                     required
                     type="tel"
                     inputProps={{ pattern: '[0-9\-\+\(\) ]*' }}
+                  />
+                  <TextField
+                    label="Notes for Riders (Optional)"
+                    variant="outlined"
+                    value={notes}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNotes(e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    multiline
+                    rows={3}
+                    placeholder="Any special instructions, pickup details, or notes you'd like to share with your riders..."
+                    helperText="This note will be included in emails sent to your riders"
                   />
                 </Box>
               </Card>

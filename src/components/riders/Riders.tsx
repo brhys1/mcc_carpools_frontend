@@ -46,6 +46,7 @@ const Riders: React.FC = () => {
   const [data, setData] = useState<NameData[]>([]);
   const [selectedName, setSelectedName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
   const [weekState, setWeekState] = useState<any>(null);
   const [availability, setAvailability] = useState<Availability>({});
   const [divisions, setDivisions] = useState<Divisions>({
@@ -65,8 +66,9 @@ const Riders: React.FC = () => {
         const names: NameData[] = dataArray.map((item: any) => {
           const name = `${item["First Name"]} ${item["Last Name"]}`;
           const email = item.Uniqname ? `${item.Uniqname}@umich.edu` : '';
-          console.log('Processing item:', item, 'Name:', name, 'Email:', email);
-          return { name, email };
+          const phone = item["Phone Number"] || '';
+          console.log('Processing item:', item, 'Name:', name, 'Email:', email, 'Phone:', phone);
+          return { name, email, phone };
         });
         console.log('Processed names:', names);
         setData(names);
@@ -148,7 +150,7 @@ const Riders: React.FC = () => {
       }));
     });
   
-    const riderData: RiderData = { name: selectedName, email, availability: formattedAvailability, divisions };
+    const riderData: RiderData = { name: selectedName, email, phone, availability: formattedAvailability, divisions };
 
     console.log('Submitting Rider Data:', JSON.stringify(riderData, null, 2));
 
@@ -291,6 +293,7 @@ const Riders: React.FC = () => {
                         console.log('Selected item:', selected);
                         setSelectedName(selected ? selected.name : '');
                         setEmail(newValue || '');
+                        setPhone(selected ? selected.phone || '' : '');
                       }}
                       renderInput={(params: any) => (
                         <TextField {...params} label="Select your email" variant="outlined" fullWidth />
@@ -306,6 +309,16 @@ const Riders: React.FC = () => {
                       fullWidth
                     />
                   </Box>
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                  <TextField
+                    label="Phone Number"
+                    variant="outlined"
+                    value={phone}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                    helperText="Phone number from Google Sheets"
+                  />
                 </Box>
               </Card>
               <Card sx={{ mb: 4, p: 3 }}>
