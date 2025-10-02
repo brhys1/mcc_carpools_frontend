@@ -317,7 +317,6 @@ const Riders: React.FC = () => {
                     value={phone}
                     InputProps={{ readOnly: true }}
                     fullWidth
-                    helperText="Phone number from Google Sheets"
                   />
                 </Box>
               </Card>
