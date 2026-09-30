@@ -246,7 +246,7 @@ const Riders: React.FC = () => {
                 </Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   If you've paid dues but don't see your name, please{' '}
-                  <Link href="https://docs.google.com/forms/d/e/1FAIpQLSd-BmXMTGXi0ZoZXD_sVy5qMzrHDNYPqMfcn67_kS9FBZe1mg/viewform" target="_blank" color="inherit">
+                  <Link href="https://docs.google.com/forms/d/e/1FAIpQLSeB4ulrzToc0k5aOj64JQ89z0PsKZXMIIgAdTiSL3QtXX9xRQ/viewform" target="_blank" color="inherit">
                     fill out this form to join MCC
                   </Link>.
                 </Typography>
